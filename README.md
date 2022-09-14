@@ -1,7 +1,7 @@
 # Directory Tree
 
 ## Features
-* [CI: GitHub Actions](.github/workflows/code_checks.yml)
+* [CI: GitHub Actions](.github/workflows/code_check.yml)
 * Code checks
   * `flake8`
   * `black`
