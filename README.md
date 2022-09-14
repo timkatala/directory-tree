@@ -4,9 +4,7 @@
 * [CI: GitHub Actions](.github/workflows/code_checks.yml)
 * Code checks
   * `flake8`
-  * `isort`
   * `black`
-  * `mypy`
 * [Tests (`Pytest`)](tests)
 
 ## Usage
