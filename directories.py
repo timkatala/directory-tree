@@ -11,7 +11,7 @@ class DirectoryNotExist(Exception):
 
 
 class Directory:
-    def __init__(self, name: str = '', parent: Directory | None = None):
+    def __init__(self, name: str = "", parent: Directory | None = None):
         self.name = name
         self.parent = parent
         self.subdirectories = {}
@@ -78,7 +78,7 @@ def execute(command: Command, directory: Directory, path: str | None = None, tar
             print(f"Cannot delete {path} - {e.value} does not exist")
 
     if command == Command.LIST:
-        print('\n'.join(directory.list_all()))
+        print("\n".join(directory.list_all()))
 
 
 if __name__ == "__main__":
@@ -89,4 +89,4 @@ if __name__ == "__main__":
         for line in lines:
             print(line)
             command, path, target_path, *_ = line.split() + 2 * [""]
-            execute(command, ROOT, path, target_path)
+            execute(Command[command], ROOT, path, target_path)

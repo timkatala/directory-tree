@@ -14,10 +14,7 @@ def root():
 
 
 def test_get_directory(root: Directory):
-    apples = Directory(
-        name="apples",
-        parent=root.subdirectories["fruits"]
-    )
+    apples = Directory(name="apples", parent=root.subdirectories["fruits"])
     root.subdirectories["fruits"].subdirectories["apples"] = apples
     assert root.get_directory(root.parse_path("fruits/apples")) == apples
 
@@ -54,4 +51,4 @@ def test_delete_directory(root: Directory):
 def test_list_all(root: Directory):
     res = root.list_all()
 
-    assert res == ['fruits', 'grains', 'vegetables']
+    assert res == ["fruits", "grains", "vegetables"]
