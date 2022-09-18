@@ -14,40 +14,48 @@ class Directory:
     def __init__(self, name: str = "", parent: Directory | None = None):
         self.name = name
         self.parent = parent
-        self.subdirectories = {}
-
-    def create(self, path_dirs: deque[str]) -> None:
-        if (dir_ := path_dirs.popleft()) not in self.subdirectories:
-            self.subdirectories[dir_] = Directory(name=dir_, parent=self)
-        if path_dirs:
-            self.subdirectories[dir_].create(path_dirs)
-
-    def move(self, moving_path_dirs, target_path_dirs: deque[str]) -> None:
-        moving_dir = self.get_directory(moving_path_dirs)
-        target_dir = self.get_directory(target_path_dirs)
-
-        target_dir.subdirectories[moving_dir.name] = moving_dir
-        moving_dir.parent.subdirectories.pop(moving_dir.name)
-
-    def delete(self, path_dirs) -> None:
-        dir_ = self.get_directory(path_dirs)
-        dir_.parent.subdirectories.pop(dir_.name)
-
-    def list_all(self, level: int = -1) -> list[str]:
-        result = [] if level == -1 else [" " * level + self.name]
-        for _, dir_ in sorted(self.subdirectories.items()):
-            result += dir_.list_all(level + 1)
-        return result
+        self.subdirectories: dict[str, Directory] = {}
 
     def get_directory(self, path: deque[str]) -> Directory:
+        """Return the directory by path."""
         if not path:
             return self
         if (dir_ := path.popleft()) not in self.subdirectories:
             raise DirectoryNotExist(value=dir_)
         return self.subdirectories[dir_].get_directory(path)
 
+    def create(self, path_dirs: deque[str]) -> None:
+        """Create directories according to path dirs."""
+        if (dir_ := path_dirs.popleft()) not in self.subdirectories:
+            self.subdirectories[dir_] = Directory(name=dir_, parent=self)
+        if path_dirs:
+            self.subdirectories[dir_].create(path_dirs)
+
+    def move(self, moving_path_dirs, target_path_dirs: deque[str]) -> None:
+        """Move directory from moving_path_dirs to target_path_dirs."""
+        moving_dir = self.get_directory(moving_path_dirs)
+        target_dir = self.get_directory(target_path_dirs)
+
+        target_dir.subdirectories[moving_dir.name] = moving_dir
+        if moving_dir.parent is not None:
+            moving_dir.parent.subdirectories.pop(moving_dir.name)
+
+    def delete(self, path_dirs) -> None:
+        """Delete directory."""
+        dir_ = self.get_directory(path_dirs)
+        if dir_.parent is not None:
+            dir_.parent.subdirectories.pop(dir_.name)
+
+    def list_all(self, level: int = -1) -> list[str]:
+        """Return the list of all directories in a tree structure."""
+        result = [] if level == -1 else [" " * level + self.name]
+        for _, dir_ in sorted(self.subdirectories.items()):
+            result += dir_.list_all(level + 1)
+        return result
+
     @staticmethod
     def parse_path(path) -> deque[str]:
+        """Return deque of path names split by /."""
         return deque(path.split("/"))
 
 
@@ -58,7 +66,8 @@ class Command(str, Enum):
     LIST = "LIST"
 
 
-def execute(command: Command, directory: Directory, path: str | None = None, target_path: str | None = None) -> None:
+def execute(command: Command, directory: Directory, path: str = "", target_path: str = "") -> None:
+    """Delegate the commands from input into Directory class."""
     path_dirs = Directory.parse_path(path)
     target_path_dirs = Directory.parse_path(target_path)
 
